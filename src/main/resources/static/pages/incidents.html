@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incident Reports</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="container">
+    <h1>📝 Incident Reports</h1>
+    <div id="alertBox" class="alert-banner" style="display:none;"></div>
+
+    <div class="card">
+      <h3>Report a new incident</h3>
+      <p class="muted">Just write what happened in your own words - our AI will turn it
+        into a structured report and estimate the urgency level automatically.</p>
+      <form id="incidentForm">
+        <label>Title</label><input type="text" id="title" required>
+        <label>What happened?</label>
+        <textarea id="description" rows="4" required placeholder="e.g. A man followed me from the bus stop to my street around 8pm..."></textarea>
+        <button type="submit">Submit Report</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Your Past Reports</h3>
+      <div id="incidentsList" class="muted">Loading...</div>
+    </div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    requireLogin();
+    renderNav();
+
+    function badgeClass(level) {
+      if (level === "HIGH") return "badge-high";
+      if (level === "LOW") return "badge-low";
+      return "badge-medium";
+    }
+
+    async function loadIncidents() {
+      const incidents = await apiFetch("/api/incidents");
+      const el = document.getElementById("incidentsList");
+      if (incidents.length === 0) { el.textContent = "No incidents reported yet."; return; }
+      el.innerHTML = incidents.map(i => `
+        <div class="card" style="background:#fffafb;">
+          <div class="flex-between">
+            <strong>${i.title}</strong>
+            <span class="badge ${badgeClass(i.riskLevel)}">${i.riskLevel}</span>
+          </div>
+          <p class="muted">${new Date(i.createdAt).toLocaleString()}</p>
+          <p><strong>Your notes:</strong> ${i.description}</p>
+          <p><strong>AI Structured Report:</strong></p>
+          <pre style="white-space:pre-wrap;font-family:inherit;">${i.aiGeneratedReport}</pre>
+        </div>`).join("");
+    }
+
+    document.getElementById("incidentForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch("/api/incidents", {
+          method: "POST",
+          body: JSON.stringify({
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value
+          })
+        });
+        e.target.reset();
+        showAlert("alertBox", "Incident reported. AI is analyzing it below.", "success");
+        loadIncidents();
+      } catch (err) {
+        showAlert("alertBox", err.message);
+      }
+    });
+
+    loadIncidents();
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="container">
+    <h1>🛠️ Admin Dashboard</h1>
+    <div id="statsCards" style="display:flex;gap:16px;flex-wrap:wrap;"></div>
+
+    <div class="card">
+      <h3>All Users</h3>
+      <table><thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+        <tbody id="usersTable"></tbody></table>
+    </div>
+
+    <div class="card">
+      <h3>Active SOS Alerts</h3>
+      <table><thead><tr><th>User</th><th>Location</th><th>Triggered At</th></tr></thead>
+        <tbody id="alertsTable"></tbody></table>
+    </div>
+
+    <div class="card">
+      <h3>All Incidents</h3>
+      <table><thead><tr><th>Title</th><th>Risk</th><th>User</th><th>Date</th></tr></thead>
+        <tbody id="incidentsTable"></tbody></table>
+    </div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    requireLogin();
+    renderNav();
+
+    async function loadAdminData() {
+      try {
+        const stats = await apiFetch("/api/admin/stats");
+        document.getElementById("statsCards").innerHTML = Object.entries(stats).map(([k,v]) => `
+          <div class="card" style="flex:1;min-width:140px;text-align:center;">
+            <h2>${v}</h2><div class="muted">${k}</div>
+          </div>`).join("");
+
+        const users = await apiFetch("/api/admin/users");
+        document.getElementById("usersTable").innerHTML = users.map(u =>
+          `<tr><td>${u.fullName}</td><td>${u.email}</td><td>${u.role}</td></tr>`).join("");
+
+        const alerts = await apiFetch("/api/admin/alerts");
+        document.getElementById("alertsTable").innerHTML = alerts.map(a =>
+          `<tr><td>${a.user?.fullName || "-"}</td><td>${a.latitude || "-"}, ${a.longitude || "-"}</td><td>${new Date(a.triggeredAt).toLocaleString()}</td></tr>`).join("");
+
+        const incidents = await apiFetch("/api/admin/incidents");
+        document.getElementById("incidentsTable").innerHTML = incidents.map(i =>
+          `<tr><td>${i.title}</td><td>${i.riskLevel}</td><td>${i.user?.fullName || "-"}</td><td>${new Date(i.createdAt).toLocaleString()}</td></tr>`).join("");
+      } catch (err) {
+        alert("Admin access required, or: " + err.message);
+        window.location.href = "/pages/dashboard.html";
+      }
+    }
+    loadAdminData();
+  </script>
+</body>
+</html>

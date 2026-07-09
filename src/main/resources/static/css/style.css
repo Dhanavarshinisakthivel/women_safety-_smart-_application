@@ -1,0 +1,131 @@
+/* ===================================================================
+   SHARED STYLES
+   One CSS file used by every page, so the whole app looks consistent.
+   =================================================================== */
+:root {
+  --primary: #d6336c;
+  --primary-dark: #a61e4d;
+  --danger: #e03131;
+  --bg: #fff5f7;
+  --card-bg: #ffffff;
+  --text: #2b2b2b;
+  --muted: #767676;
+  --border: #f1c1d1;
+  --success: #2f9e44;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+nav {
+  background: var(--primary);
+  color: white;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-left: 16px;
+  font-weight: 600;
+}
+
+nav a:hover { text-decoration: underline; }
+
+.container {
+  max-width: 900px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+h1, h2, h3 { color: var(--primary-dark); }
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0 14px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+label { font-weight: 600; font-size: 14px; }
+
+button, .btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  text-decoration: none;
+}
+
+button:hover, .btn:hover { background: var(--primary-dark); }
+
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #b91c1c; }
+.btn-secondary { background: #868e96; }
+.btn-secondary:hover { background: #5c636a; }
+
+.sos-button {
+  background: var(--danger);
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  border-radius: 50%;
+  width: 160px;
+  height: 160px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(224,49,49,0.5);
+}
+.sos-button:hover { background: #b91c1c; }
+
+.alert-banner {
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.alert-error { background: #ffe3e3; color: #a61e4d; border: 1px solid #ffc9c9; }
+.alert-success { background: #ebfbee; color: #2b8a3e; border: 1px solid #b2f2bb; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+
+.badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; color: white; }
+.badge-high { background: var(--danger); }
+.badge-medium { background: #f08c00; }
+.badge-low { background: var(--success); }
+
+.chat-box { height: 300px; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; padding: 10px; margin-bottom: 10px; background: #fffafb; }
+.chat-msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; max-width: 80%; }
+.chat-msg.user { background: var(--primary); color: white; margin-left: auto; }
+.chat-msg.bot { background: #f1f3f5; color: var(--text); }
+
+.muted { color: var(--muted); font-size: 14px; }
+.center { text-align: center; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }

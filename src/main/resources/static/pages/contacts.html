@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Contacts</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav id="nav"></nav>
+  <div class="container">
+    <h1>👥 Emergency Contacts</h1>
+    <div id="alertBox" class="alert-banner" style="display:none;"></div>
+
+    <div class="card">
+      <h3>Add a new contact</h3>
+      <form id="contactForm">
+        <label>Name</label><input type="text" id="name" required>
+        <label>Phone</label><input type="text" id="phone" required>
+        <label>Email (optional)</label><input type="email" id="email">
+        <label>Relationship</label><input type="text" id="relationship" placeholder="e.g. Mother, Friend">
+        <label>Priority (1 = notify first)</label><input type="number" id="priority" value="1" min="1">
+        <button type="submit">Add Contact</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>Your Contacts</h3>
+      <table id="contactsTable">
+        <thead><tr><th>Name</th><th>Phone</th><th>Relationship</th><th>Priority</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="/js/api.js"></script>
+  <script>
+    requireLogin();
+    renderNav();
+
+    async function loadContacts() {
+      const contacts = await apiFetch("/api/contacts");
+      const tbody = document.querySelector("#contactsTable tbody");
+      tbody.innerHTML = contacts.map(c => `
+        <tr>
+          <td>${c.name}</td><td>${c.phone}</td><td>${c.relationship || "-"}</td><td>${c.priority}</td>
+          <td><button class="btn-danger" onclick="deleteContact(${c.id})">Delete</button></td>
+        </tr>`).join("");
+    }
+
+    document.getElementById("contactForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        await apiFetch("/api/contacts", {
+          method: "POST",
+          body: JSON.stringify({
+            name: document.getElementById("name").value,
+            phone: document.getElementById("phone").value,
+            email: document.getElementById("email").value,
+            relationship: document.getElementById("relationship").value,
+            priority: parseInt(document.getElementById("priority").value)
+          })
+        });
+        e.target.reset();
+        showAlert("alertBox", "Contact added!", "success");
+        loadContacts();
+      } catch (err) {
+        showAlert("alertBox", err.message);
+      }
+    });
+
+    async function deleteContact(id) {
+      if (!confirm("Remove this contact?")) return;
+      await apiFetch(`/api/contacts/${id}`, { method: "DELETE" });
+      loadContacts();
+    }
+
+    loadContacts();
+  </script>
+</body>
+</html>
